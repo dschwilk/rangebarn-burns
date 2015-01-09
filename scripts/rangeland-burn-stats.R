@@ -2,13 +2,24 @@ library(ggplot2)
 library(nlme)
 
 burns <- read.csv("../data/rangeland-burns-temps.csv")
+burns$plot <- factor(burns$plot)
 
 plot(burns[,c(7:10, 12:14, 16)])
 
 ggplot(burns, aes(spcode, ptemp.sur)) +
     geom_boxplot() +
     facet_grid(. ~ plot)
+
 ggsave("../results/ptemp-by-spcode-plot.pdf")
+
+# for visualizing spcoide effect on residuals of plot effect
+
+t.mod <- lm(ptemp.sur ~ plot, data=burns)
+burns$ptemp.sur.resid <- residuals(t.mod)
+
+ggplot(burns, aes(spcode, ptemp.sur.resid) ) +
+    geom_boxplot()
+
 
 
 ## significant effect of species on peak temperature
